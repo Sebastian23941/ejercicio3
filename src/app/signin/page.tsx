@@ -1,6 +1,11 @@
 'use client'
 
+/*PARA FUNCIONAR PON ESTA LINEA DE CODIGO DEL validator*/
+/*npm install validator*/
+//Queria usar un import del validator, pero no me jalo, asi que lo puse con require y asi si funciono
+
 import { useEffect, useState } from "react";
+const validator = require("validator");
 
 interface User {
   name: string;
@@ -11,6 +16,7 @@ interface User {
 export default function Register() {
   const [user, setUser] = useState<User>({ name: "", email: "", password: "" });
   const [error, setError] = useState<string>("");
+
   const [registeredName, setRegisteredName] = useState<string | null>(() => {
     return localStorage.getItem("registeredName");
   });
@@ -21,8 +27,9 @@ export default function Register() {
     }
   }, [registeredName]);
 
+  // Validar email con la librería validator
   const validateEmail = (email: string): boolean => {
-    return /^[a-zA-Z0-9._%+-]+@(gmail\.com|hotmail\.com)$/.test(email);
+    return validator.isEmail(email);
   };
 
   const validatePassword = (password: string): boolean => {
@@ -31,6 +38,22 @@ export default function Register() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    //Errores 
+    
+    if (!user.name && validateEmail(user.email) && validatePassword(user.password)) {
+      setError("Nombre necesitado");
+      return;
+    }
+    
+    if (user.name && !user.email && user.password) {
+      setError("Correo necesitado");
+      return;
+    }
+
+    if (user.name && user.email && !user.password) {
+      setError("Contraseña necesitado");
+      return;
+    }
 
     if (!user.name || !user.email || !user.password) {
       setError("Todos los campos son obligatorios");
@@ -47,78 +70,53 @@ export default function Register() {
       return;
     }
 
-    setRegisteredName(user.name); // Guarda solo el nombre en localStorage
+    setRegisteredName(user.name);
     setError("");
   };
 
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      height: "100vh",
-      position: "relative",
+    <div style={{display: "flex",flexDirection: "column", alignItems: "center", justifyContent: "center",height: "100vh",position: "relative"
     }}>
-      {/* Nombre en la esquina superior derecha */}
-      <div style={{
-        position: "absolute",
-        top: "20px",
-        right: "20px",
-        fontSize: "18px",
-        fontWeight: "bold",
-      }}>
+      {/*Nombre en la derecha arriba*/}
+      <div style={{ position: "absolute", top: "20px", right: "20px", fontSize: "18px", fontWeight: "bold" }}>
         {registeredName || ""}
       </div>
 
-      {/* Contenedor del formulario */}
-      <div style={{
-        backgroundColor: "#2c2c2c",
-        padding: "20px",
-        borderRadius: "10px",
-        boxShadow: "0px 4px 10px rgba(0,0,0,0.3)",
-        display: "flex",
-        flexDirection: "column",
-        width: "300px",
-        alignItems: "center",
+      {/*formulario*/}
+      <div style={{backgroundColor: "darkgray", padding: "20px", display: "flex", flexDirection: "column", width: "300px", alignItems: "center",
       }}>
-        <form onSubmit={handleSubmit} style={{ width: "100%", display: "flex", flexDirection: "column", gap: "10px" }}>
+        <form onSubmit={handleSubmit} style={{width: "250px", display: "flex", flexDirection: "column", gap: "10px" }}>
           <input
             type="text"
             placeholder="Nombre"
             value={user.name}
             onChange={(e) => setUser({ ...user, name: e.target.value })}
-            style={{ backgroundColor: "gray", color: "white", border: "none", padding: "10px", borderRadius: "4px" }}
+            style={{ backgroundColor: "gray", color: "white", border: "none", padding: "2px", borderRadius: "4px" }}
           />
           <input
             type="email"
             placeholder="Correo"
             value={user.email}
             onChange={(e) => setUser({ ...user, email: e.target.value })}
-            style={{ backgroundColor: "gray", color: "white", border: "none", padding: "10px", borderRadius: "4px" }}
+            style={{ backgroundColor: "gray", color: "white", border: "none", padding: "2px", borderRadius: "4px" }}
           />
           <input
             type="password"
             placeholder="Contraseña"
             value={user.password}
             onChange={(e) => setUser({ ...user, password: e.target.value })}
-            style={{ backgroundColor: "gray", color: "white", border: "none", padding: "10px", borderRadius: "4px" }}
+            style={{ backgroundColor: "gray", color: "white", border: "none", padding: "2px", borderRadius: "4px" }}
           />
           <button type="submit" style={{
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            padding: "10px",
-            borderRadius: "4px",
-            cursor: "pointer"
+            backgroundColor: "blue", color: "white", padding: "10px", cursor: "pointer"
           }}>
             Aceptar
           </button>
         </form>
       </div>
 
-      {/* Mensaje de error en la parte inferior */}
-      {error && <p style={{ color: "red", fontWeight: "bold", marginTop: "10px" }}>{error}</p>}
+      {/*Mensaje de error*/}
+      {error && <p style={{ color: "red", fontWeight: "bold"}}>{error}</p>}
     </div>
   );
 }
