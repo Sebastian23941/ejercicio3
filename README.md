@@ -1,3 +1,9 @@
+# Parte del estudiante. Quiero mencionar que para funcionar al 100% requerira en el bash descargar esta libreria primero
+
+```bash
+npm install validator
+```
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
